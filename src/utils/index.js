@@ -1,4 +1,5 @@
-/**
+exports.install = function (Vue,option) { 
+/*
  * Created by PanJiaChen on 16/11/18.
  */
 
@@ -8,7 +9,7 @@
  * @param {string} cFormat
  * @returns {string}
  */
-export function parseTime(time, cFormat) {
+Vue.prototype.parseTime = function (time, cFormat) {
   if (arguments.length === 0) {
     return null
   }
@@ -51,7 +52,7 @@ export function parseTime(time, cFormat) {
  * @param {string} option
  * @returns {string}
  */
-export function formatTime(time, option) {
+Vue.prototype.formatTime = function (time, option) {
   if (('' + time).length === 10) {
     time = parseInt(time) * 1000
   } else {
@@ -93,7 +94,7 @@ export function formatTime(time, option) {
  * @param {string} url
  * @returns {Object}
  */
-export function param2Obj(url) {
+Vue.prototype.param2Obj =  function (url) {
   const search = url.split('?')[1]
   if (!search) {
     return {}
@@ -107,4 +108,6 @@ export function param2Obj(url) {
         .replace(/\+/g, ' ') +
       '"}'
   )
+}
+
 }

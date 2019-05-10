@@ -46,46 +46,46 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: '/home',
     children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      path: 'home',
+      name: 'home',
+      component: () => import('@/views/home/index'),
+      meta: { title: '首页', icon: 'dashboard' }
     }]
   },
 
   {
-    path: '/example',
+    path: '/articleManage',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'example' },
+    redirect: '/articleManage/article',
+    name: 'articleManage',
+    meta: { title: '文章管理', icon: 'example' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: 'article',
+        name: 'article',
+        component: () => import('@/views/articleManage/article'),
+        meta: { title: '文章', icon: 'table' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        path: 'publish',
+        name: 'publish',
+        component: () => import('@/views/articleManage/publish'),
+        meta: { title: '发布', icon: 'tree' }
       }
     ]
   },
 
   {
-    path: '/form',
+    path: '/userManage',
     component: Layout,
     children: [
       {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        path: 'userManage',
+        name: 'userManage',
+        component: () => import('@/views/userManage/user'),
+        meta: { title: '用户管理', icon: 'form' }
       }
     ]
   },
@@ -154,8 +154,24 @@ export const constantRoutes = [
     children: [
       {
         path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
+        meta: { title: '评论管理', icon: 'link' }
       }
+    ]
+  },
+
+  {
+    path: '/notice',
+    component: Layout,
+    children: [
+     {
+       path: 'index',
+       name: 'notice',
+       component: () => import('@/views/notice/index'),
+       meta: {
+         title: '通知',
+         icon: 'form'
+       }
+     }
     ]
   },
 
