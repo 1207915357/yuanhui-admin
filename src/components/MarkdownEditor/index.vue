@@ -116,3 +116,11 @@ export default {
   }
 }
 </script>
+<style>
+.tui-editor-defaultUI .te-mode-switch {
+    line-height: 0;
+}
+.tui-editor .te-preview-style-vertical .te-preview{
+  background: #fff;
+}
+</style>

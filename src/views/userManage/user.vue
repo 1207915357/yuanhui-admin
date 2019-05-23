@@ -37,37 +37,61 @@
       </el-table-column>
       <el-table-column label="权限等级" min-width="200" align="center">
         <template slot-scope="scope">
-         <span>{{ scope.row.type }}</span>
+         <span>{{ scope.row.type | typeFilter }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="150" align="center">
         <template slot-scope="scope">
-          <el-button @click='turnTo(scope.row.articleId)' plain type='primary' size="mini">编辑</el-button>
-          <el-button @click="openDeleteBox(scope.row.articleId)" plain type='danger' size="mini">删除</el-button>
+          <el-button @click='openEditBox(scope.row)' plain type='primary' size="mini">编辑</el-button>
+          <el-button @click="openDeleteBox(scope.row.userId)" plain type='danger' size="mini">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
+    <!-- 编辑窗 -->
+    <el-dialog
+      title="编辑用户"
+      :visible.sync="editStatus"
+      width="30%"
+      >
+      <el-form  status-icon  label-width="70px" class="demo-ruleForm">
+        <el-form-item label="用户名">
+          <el-input v-model="theUserName"></el-input>
+        </el-form-item>
+        <el-form-item label="权限">
+          <el-input v-model="theType" type='number'></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button size='small' @click="editStatus = false">取 消</el-button>
+        <el-button size='small' type="primary" @click="editUser">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
+
+  
 </template>
 
 <script>
 // import '@/utils/index.js'
 
 export default {
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'gray',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    }
-  },
+ filters:{
+   typeFilter(type){
+     const typeMap = {
+       0:'管理员',
+       1:'用户'
+     }
+     return typeMap[type]
+   }
+ },
   data() {
     return {
       list: null,
       listLoading: true,
+      editStatus:false,
+      theUserId:'',
+      theUserName:'',
+      theType:'',
     }
   },
   created() {
@@ -75,18 +99,40 @@ export default {
    
   },
   methods: {
-     //编辑
-    turnTo(id){
-        this.$router.push({path:'/articleManage/publish',query:{id:id,type:this.articleType}})  // type: draft/article
+     //编辑用户
+    editUser(){
+      this.$api.user.updateUser({
+        userId:this.theUserId,
+        userName:this.theUserName,
+        type:this.theType
+      })
+      .then((data)=>{
+        if(data.code == 1){
+          this.editStatus = false;
+          this.$message.success("修改成功!")
+          this.getUserList()
+        }else if(data.code == 300){
+          this.$message.error("用户名重复!")
+        }else{
+          this.$message.error("server error!")
+        }
+      })
+    },
+    //打开编辑弹窗
+    openEditBox(theUserInfo){
+      this.editStatus = true;
+      this.theUserId = theUserInfo.userId
+      this.theUserName = theUserInfo.userName
+      this.theType = theUserInfo.type
     },
     //确认删除框
-     openDeleteBox(articleId) {
-        this.$confirm('此操作将永久删除该文章, 是否继续?', '提示', {
+     openDeleteBox(userId) {
+        this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.deleteArticle(articleId)
+          this.deleteUser(userId)
         }).catch(() => {
           this.$message({
             type: 'info',
@@ -95,8 +141,8 @@ export default {
         });
       },
     //删除
-    deleteArticle(articleId){
-        this.$api.article.deleteArticle({articleId,type:this.articleType})
+    deleteUser(userId){
+        this.$api.user.deleteUser({userId})
         .then((data)=>{
             if(data.code===1){
                 this.$message({
@@ -104,7 +150,7 @@ export default {
                   type:'success',
                   duration:1500
                 })
-                this.getArticleList()
+                this.getUserList()
             }
         })
     },
