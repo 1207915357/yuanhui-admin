@@ -32,6 +32,12 @@ const user = {
   getAllUser(params) {
     return axios.post(`${base.dev}/getAllUser`, qs.stringify(params));
   },
+  deleteUser(params) {
+    return axios.post(`${base.dev}/deleteUser`, qs.stringify(params));
+  },
+  updateUser(params) {
+    return axios.post(`${base.dev}/updateUser`, qs.stringify(params));
+  },
 }
 
 export default user
