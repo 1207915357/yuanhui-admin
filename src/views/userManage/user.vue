@@ -21,7 +21,7 @@
       </el-table-column>
       <el-table-column label="邮箱" min-width="200" align="center">
         <template slot-scope="scope">
-          <!-- <span>{{ scope.row.userName }}</span> -->
+          {{scope.row.email}}
         </template>
       </el-table-column>
       <!-- <el-table-column label="查看/点赞/评论" width="130" align="center">
