@@ -66,15 +66,15 @@ service.interceptors.response.use(
       //     })
       //   })
       // }
-      return Promise.reject(res.message || 'error')
+      return Promise.reject(res.msg || 'error')
     } else {
       return res
     }
   },
   error => {
-    console.log('err' + error) // for debug
+    console.log(error + 'err') // for debug
     Message({
-      message: error.message,
+      message: error.msg,
       type: 'error',
       duration: 5 * 1000
     })
@@ -82,9 +82,12 @@ service.interceptors.response.use(
   }
 )
 
-const errorHandle = (status, msg) => {
+const errorHandle = (status) => {
   // 失败状态码判断
   switch (status) {
+     case 0:
+       Message.error('请求错误!');
+     break;
     case 400:
       Message.info('缺少必要参数!');
       break;
@@ -113,7 +116,7 @@ const errorHandle = (status, msg) => {
       Message.info('服务器错误!');
       break;
     default:
-      console.log(msg);
+      console.log(status,'statusCode');
   }
 }
 

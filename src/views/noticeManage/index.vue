@@ -40,8 +40,11 @@ export default {
   methods: {
     //发布
     onSubmit() {
+      if(this.authorId==""||this.content==""){
+        this.$message.info('请添加完整信息！')
+        return
+      }
       let type 
-      // this.authorId=="0" ? type='all' : type="one"
       if(this.authorId[0]=="0"){
         type='all'
       }else if(this.authorId[0] !="0"&&this.authorId.length==1){
@@ -63,11 +66,13 @@ export default {
           }else{
            this.$message.error(data.msg)
           }
+      }).catch((data)=>{
+            console.log(data,'err')
       })
     },
     //
     selectChange(valArr){
-      console.log(valArr)
+      // console.log(valArr)
       if(valArr[0]=="0"){
         for(let [i,ele] of this.userList.entries()){
           if(i !=0 ){
