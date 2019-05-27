@@ -29,10 +29,6 @@ const article = {
   articleDraft(params) {
     return axios.post(`${base.dev}/article/articleDraft`, qs.stringify(params));
   },
-  //获取评论列表
-  getCommentList(params){
-    return axios.post(`${base.dev}/article/getCommentList`, qs.stringify(params));
-  }
 }
 
 export default article
