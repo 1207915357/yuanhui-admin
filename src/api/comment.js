@@ -10,7 +10,15 @@ const comment = {
   //审核评论
   checkComment(params) {
     return axios.post(`${base.dev}/comment/checkComment`, qs.stringify(params));
-  }
+  },
+  //删除评论
+  deleteComment(params) {
+    return axios.post(`${base.dev}/comment/deleteComment`, qs.stringify(params));
+  },
+  //子评论
+  subCommentArticle(params) {
+    return axios.post(`${base.dev}/comment/subComment`, qs.stringify(params));
+  },
 }
 
 export default comment

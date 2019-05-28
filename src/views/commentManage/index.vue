@@ -37,22 +37,23 @@
      <el-table-column
       prop="user.userName"
       label="用户"
-      width="180">
+      width="120">
     </el-table-column>
      <el-table-column
       label="评论文章/用户"
-      width="180">
+      >
       <template slot-scope="scope">
-        <span v-if="scope.row.articleId">《{{scope.row.articleTitle}}》</span>
+        <span v-if="scope.row.type=='parent'">《{{scope.row.articleTitle}}》</span>
         <span v-else>@{{scope.row.toUser.userName}}</span>
       </template>
     </el-table-column>
     <el-table-column
       prop="content"
       label="评论内容"
-      width="180">
+      >
     </el-table-column>
     <el-table-column
+    width="260"
       prop="checkStatus"
       label="审核状态">
       <template slot-scope="scope">
@@ -69,10 +70,11 @@
     </el-table-column>
     <el-table-column
       prop="action"
+      width="150"
       label="操作">
       <template slot-scope="scope">
-         <el-button plain size='mini' type="primary" @click="handleReply(scope.$index, scope.row)">回复</el-button>
-         <el-button plain size='mini' type='danger'  @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+         <el-button plain size='mini' type="primary" @click="openReplyBox(scope.row)">回复</el-button>
+         <el-button plain size='mini' type='danger'  @click="openDeleteBox(scope.row)">删除</el-button>
       </template>
     </el-table-column>
   </el-table>
@@ -83,6 +85,21 @@
     layout="prev, pager, next"
     :total="total">
   </el-pagination>
+
+   <!-- 回复窗 -->
+    <el-dialog
+      :title="`回复(${replyUser})`"
+      :visible.sync="replyBox"
+      width="30%"
+      >
+        <div style="background:#f1f1f1;padding:6px">{{toContent}}</div>
+        <p style="font-weight:700;">@{{replyUser}}</p>
+        <el-input type='textarea' v-model="replyContent"></el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button size='small' @click="replyBox = false">取 消</el-button>
+        <el-button size='small' type="primary" @click="subComment">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -93,7 +110,7 @@ export default {
   name: 'Dashboard',
   computed: {
     ...mapGetters([
-      'name'
+      'name','userId'
     ])
   },
   data() {
@@ -104,6 +121,14 @@ export default {
         articleList:[],
         articleId:'',
         total:0,
+        replyBox:false,
+
+        commentId:'',
+        articleTitle:'',
+        replyContent:'',
+        replyUser:'',
+        toUserId:'',
+        toContent:'',
       }
     },
     methods: {
@@ -119,7 +144,7 @@ export default {
             commentId:row.commentId,
             type:row.type,
             id:row._id,
-            articleId:row.articleId
+            // articleId:row.articleId
           }
         )
         .then((data)=>{
@@ -128,6 +153,8 @@ export default {
           }else{
             this.$message.error('操作失败!')
           }
+        }).catch((error)=>{
+          console.log(error)
         })
       },
       //翻页
@@ -168,13 +195,98 @@ export default {
           this.articleList = data.data
         })
       },
-      //回复
-      handleReply(index, row) {
-        console.log(index, row);
+      //回复窗
+      openReplyBox(row){
+        this.replyBox = true
+        this.articleId=row.articleId
+        this.commentId = row.commentId
+        this.articleTitle = row.articleTitle || ""
+        this.replyUser = row.user.userName
+        this.toUserId = row.user.userId
+        this.toContent = row.content
       },
+      //回复
+      subComment(){
+             if(!this.userId){
+                this.$message.info('请先登录!')
+                return
+            }
+            this.$api.comment.subCommentArticle({
+                userId:this.userId,
+                toUserId:this.toUserId,
+                articleId:this.articleId,
+                commentId:this.commentId,
+                content:this.replyContent,
+            }).then(data=>{
+                 if(data.code===1){
+                    //通知用户
+                    let option = { 
+                        type:'answer',
+                        userId:this.userId,
+                        toUserId:this.toUserId,
+                        content:this.replyContent,
+                        toContent:this.toContent,
+                        articleId:this.articleId,
+                    }
+                    this.publishNotice(option)
+                    this.getCommentList()
+                    this.replyBox = false
+                    this.replyContent = ""
+                }else{
+                    this.$message.error('服务器错误')
+                }
+            })
+        },
+        //通知
+        //option:{ type,userId,toUserId,content,toContent,articleId}
+        publishNotice(option){ 
+            this.$api.notice.publishNotice(
+                option
+            ).then((data)=>{
+                if(data.code === 1){
+                    
+                }else{
+                    this.$message.error('服务器错误')
+                }
+            })
+        },
       //删除
-      handleDelete(index, row) {
-        console.log(index, row);
+      handleDelete(row) {
+       this.$api.comment.deleteComment(
+          {
+            commentId:row.commentId,
+            type:row.type,
+            id:row._id,
+            articleId:row.articleId
+          }
+        )
+        .then((data)=>{
+          if(data.code==1){
+            this.$message.success('删除成功!')
+            this.getCommentList()
+          }else{
+            this.$message.error('操作失败!')
+          }
+        }).catch((error)=>{
+          console.log(error)
+        })
+      },
+       //确认删除框
+     openDeleteBox(row) {
+       let msg
+       row.type=="parent"?msg="此操作将永久删除该评论和子评论, 是否继续?":msg="此操作将永久删除该评论, 是否继续?"
+        this.$confirm(msg, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.handleDelete(row)
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
       },
 
     },
@@ -207,5 +319,8 @@ export default {
 
 .filterArticle{
   padding-top: 20px;
+}
+.container /deep/ .el-dialog__body{
+  padding: 0px 20px 10px 20px;
 }
 </style>

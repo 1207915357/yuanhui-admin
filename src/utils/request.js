@@ -46,48 +46,57 @@ service.interceptors.response.use(
    * Here is just an example
    * You can also judge the status by HTTP Status Code
    */
-  response => {
-    const res = response.data
+  // response => {
+  //   const res = response
 
-    // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 1) {
-     errorHandle(res.code)
+  //   // if the custom code is not 20000, it is judged as an error.
+    
+  //   if (res.status !== 200) {
+  //    errorHandle(res.status)
 
-      // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      // if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
-      //   // to re-login
-      //   MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-      //     confirmButtonText: 'Re-Login',
-      //     cancelButtonText: 'Cancel',
-      //     type: 'warning'
-      //   }).then(() => {
-      //     store.dispatch('user/resetToken').then(() => {
-      //       location.reload()
-      //     })
-      //   })
-      // }
-      return Promise.reject(res.msg || 'error')
-    } else {
-      return res
-    }
-  },
+  //     // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
+  //     // if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
+  //     //   // to re-login
+  //     //   MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
+  //     //     confirmButtonText: 'Re-Login',
+  //     //     cancelButtonText: 'Cancel',
+  //     //     type: 'warning'
+  //     //   }).then(() => {
+  //     //     store.dispatch('user/resetToken').then(() => {
+  //     //       location.reload()
+  //     //     })
+  //     //   })
+  //     // }
+  //     return Promise.reject(res.msg || 'error')
+  //   } else {
+  //     return res.data
+  //   }
+  // },
+  res => res.status === 200 ? Promise.resolve(res.data) : Promise.reject(res),
   error => {
-    console.log(error + 'err') // for debug
-    Message({
-      message: error.msg,
-      type: 'error',
-      duration: 5 * 1000
-    })
-    return Promise.reject(error)
+   const {response} = error;
+   console.log(response, 'res')
+   if (response) {
+     // 请求已发出，但是不在2xx的范围 
+     errorHandle(response.status, response.data.msg);
+     return Promise.reject(response);
+   } else {
+     // 处理断网的情况
+     // eg:请求超时或断网时，更新state的network状态
+     // network状态在app.vue中控制着一个全局的断网提示组件的显示隐藏
+     // 关于断网组件中的刷新重新获取数据，会在断网组件中说明
+     //   store.commit('changeNetwork', false);
+     console.log('未知错误!')
+   }
   }
 )
 
-const errorHandle = (status) => {
+const errorHandle = (status,msg) => {
   // 失败状态码判断
   switch (status) {
-     case 0:
-       Message.error('请求错误!');
-     break;
+    //  case 0:
+    //    Message.error('请求错误!');
+    //  break;
     case 400:
       Message.info('缺少必要参数!');
       break;
@@ -116,7 +125,7 @@ const errorHandle = (status) => {
       Message.info('服务器错误!');
       break;
     default:
-      console.log(status,'statusCode');
+      console.log(msg,'msg');
   }
 }
 
