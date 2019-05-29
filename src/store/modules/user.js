@@ -1,12 +1,15 @@
-import { login, logout, getInfo } from '@/api/user'
+import { logout } from '@/api/user'
+import user from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { resetRouter } from '@/router'
+
 
 const state = {
   token: getToken(),
   name: '',
   avatar: '',
-  userId: "950dac10-3fc1-11e9-bed4-1134d355bff7" // yh
+  userId: '',
+  userType: '',
 }
 
 const mutations = {
@@ -18,16 +21,21 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
-  }
+  },
+  SET_USERID: (state, userId) => {
+    state.userId = userId
+  },
+  SET_USERTYPE: (state, userType) => {
+    state.userType = userType
+  },
 }
 
 const actions = {
-  // user login
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
+      user.login({ userName:username, password }).then(response => {
+        const {data}  = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)
         resolve()
@@ -36,21 +44,20 @@ const actions = {
       })
     })
   },
-
+  
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
-        const { data } = response
-
+      user.getUserInfo().then(response => {
+        const {data} = response
         if (!data) {
           reject('Verification failed, please Login again.')
         }
-
-        const { name, avatar } = data
-
-        commit('SET_NAME', name)
+        const { userName, avatar , userId, type} = data
+        commit('SET_NAME', userName)
         commit('SET_AVATAR', avatar)
+        commit('SET_USERID', userId)
+        commit('SET_USERTYPE', type)
         resolve(data)
       }).catch(error => {
         reject(error)
@@ -63,6 +70,7 @@ const actions = {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
         commit('SET_TOKEN', '')
+        commit('SET_USERID', '')
         removeToken()
         resetRouter()
         resolve()

@@ -298,15 +298,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.dashboard {
-  &-container {
-    margin: 30px;
-  }
-  &-text {
-    font-size: 30px;
-    line-height: 46px;
-  }
-}
+// .dashboard {
+//   &-container {
+//     margin: 30px;
+//   }
+//   &-text {
+//     font-size: 30px;
+//     line-height: 46px;
+//   }
+// }
+.container{padding: 20px;}
 .container /deep/ .el-table__indent{
   padding-left: 0px!important;
 }
@@ -318,7 +319,7 @@ export default {
 }
 
 .filterArticle{
-  padding-top: 20px;
+  // padding-top: 20px;
 }
 .container /deep/ .el-dialog__body{
   padding: 0px 20px 10px 20px;

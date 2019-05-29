@@ -1,20 +1,20 @@
 import request from '@/utils/request'
 
-export function login(data) {
-  return request({
-    url: '/user/login',
-    method: 'post',
-    data
-  })
-}
+// export function login(data) {
+//   return request({
+//     url: '/user/login',
+//     method: 'post',
+//     data
+//   })
+// }
 
-export function getInfo(token) {
-  return request({
-    url: '/user/info',
-    method: 'get',
-    params: { token }
-  })
-}
+// export function getInfo(token) {
+//   return request({
+//     url: '/user/info',
+//     method: 'get',
+//     params: { token }
+//   })
+// }
 
 export function logout() {
   return request({
@@ -29,6 +29,12 @@ import base from './base'; // 导入接口域名列表
 import qs from 'qs'; // 根据需求是否导入qs模块
 
 const user = {
+  login(params) {
+      return axios.post(`${base.dev}/login`, qs.stringify(params));
+  },
+  getUserInfo() {
+    return axios.get(`${base.dev}/getUserInfo`);
+  },
   getAllUser(params) {
     return axios.post(`${base.dev}/getAllUser`, qs.stringify(params));
   },
