@@ -103,8 +103,11 @@ import MDinput from '@/components/MDinput'
 import { validURL } from '@/utils/validate'
 import base from '@/api/base.js'
 import MarkdownEditor from '@/components/MarkdownEditor'
-
+import {mapGetters} from 'vuex'
 export default {
+   computed:{
+    ...mapGetters(['userType'])
+  },
   name: 'publish',
   components: {  MDinput,MarkdownEditor },
   // props: {
@@ -195,6 +198,10 @@ export default {
       },
       //文章发布
       publish(){
+         if(this.userType != 0){
+        this.$message.warning('需要管理员权限！')
+        return
+      }
         if(this.tagValue.length<1||this.categoryValu == ""||this.mdCode == ""||this.title==""||this.authorId==""){
           this.$message({type:'info',message:'请输入完整信息',duration:1500})
           return
@@ -230,6 +237,10 @@ export default {
        },
       //文章更新
       updateArticle(){
+         if(this.userType != 0){
+        this.$message.warning('需要管理员权限！')
+        return
+      }
         if(this.tagValue.length<1||this.categoryValu == ""||this.mdCode == ""||this.title==""||this.authorId==""){
           this.$message({type:'info',message:'请输入完整信息',duration:1500})
           return
@@ -294,6 +305,10 @@ export default {
       },
      //图片上传
        handleAvatarSuccess(res, file) {
+          if(this.userType != 0){
+        this.$message.warning('需要管理员权限！')
+        return
+      }
          this.imageUrl = URL.createObjectURL(file.raw);
          this.pictureUrl = res.pictureUrl;
       },

@@ -75,7 +75,7 @@ service.interceptors.response.use(
   res => res.status === 200 ? Promise.resolve(res.data) : Promise.reject(res),
   error => {
    const {response} = error;
-   console.log(response, 'res')
+   console.log(response, 'errorRes')
    if (response) {
      // 请求已发出，但是不在2xx的范围 
      errorHandle(response.status, response.data.msg);
@@ -109,13 +109,14 @@ const errorHandle = (status,msg) => {
       // 清除token并跳转登录页
     case 403:
       Message.info('登录过期，请重新登录!');
-      setTimeout(() => {
-        // localStorage.removeItem('token');
-        // store.commit('setToken', null);
-        store.dispatch('user/resetToken').then(() => {
-            location.reload()
-          })
-      }, 1000);
+      console.log(222)
+      // setTimeout(() => {
+      //   // localStorage.removeItem('token');
+      //   // store.commit('setToken', null);
+      //   store.dispatch('user/resetToken').then(() => {
+      //       location.reload() //刷新
+      //     })
+      // }, 1000);
       break;
       // 404请求不存在
     case 404:

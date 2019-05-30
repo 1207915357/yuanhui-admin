@@ -104,13 +104,13 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 
+import {mapGetters} from 'vuex'
 export default {
   name: 'Dashboard',
   computed: {
     ...mapGetters([
-      'name','userId'
+      'name','userId','userType'
     ])
   },
   data() {
@@ -138,6 +138,10 @@ export default {
       },
       //审核评论
       checkComment(status,row){
+        if(this.userType != 0){
+          this.$message.warning('需要管理员权限！')
+          return
+        }
         this.$api.comment.checkComment(
           {
             status,
@@ -207,9 +211,9 @@ export default {
       },
       //回复
       subComment(){
-             if(!this.userId){
-                this.$message.info('请先登录!')
-                return
+            if(this.userType != 0){
+              this.$message.warning('需要管理员权限！')
+              return
             }
             this.$api.comment.subCommentArticle({
                 userId:this.userId,
@@ -252,6 +256,10 @@ export default {
         },
       //删除
       handleDelete(row) {
+        if(this.userType != 0){
+              this.$message.warning('需要管理员权限！')
+              return
+            }
        this.$api.comment.deleteComment(
           {
             commentId:row.commentId,

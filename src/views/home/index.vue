@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }}</div>
+    <div class="dashboard-text">用户: {{ name }}</div>
   </div>
 </template>
 
@@ -14,7 +14,7 @@ export default {
     ...mapState('user',[
       'name'
     ])
-    // ...mapState([
+    // ...mapGetters([
     //   'name'
     // ])
   }
@@ -27,8 +27,8 @@ export default {
     margin: 30px;
   }
   &-text {
-    font-size: 30px;
-    line-height: 46px;
+    font-size: 24px;
+    line-height: 30px;
   }
 }
 </style>

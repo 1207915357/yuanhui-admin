@@ -28,7 +28,11 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
 export default {
+   computed:{
+    ...mapGetters(['userType'])
+  },
   data() {
     return {
       content:"",
@@ -40,6 +44,10 @@ export default {
   methods: {
     //发布
     onSubmit() {
+      if(this.userType != 0){
+        this.$message.warning('需要管理员权限！')
+        return
+      }
       if(this.authorId==""||this.content==""){
         this.$message.info('请添加完整信息！')
         return

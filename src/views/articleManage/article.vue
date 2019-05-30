@@ -54,8 +54,11 @@
 
 <script>
 // import '@/utils/index.js'
-
+import {mapGetters} from 'vuex'
 export default {
+   computed:{
+    ...mapGetters(['userType'])
+  },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -66,6 +69,7 @@ export default {
       return statusMap[status]
     }
   },
+ 
   data() {
     return {
       list: null,
@@ -100,6 +104,10 @@ export default {
       },
     //删除
     deleteArticle(articleId){
+      if(this.userType != 0){
+        this.$message.warning('需要管理员权限！')
+        return
+      }
         this.$api.article.deleteArticle({articleId,type:this.articleType})
         .then((data)=>{
             if(data.code===1){

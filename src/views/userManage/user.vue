@@ -74,7 +74,11 @@
 <script>
 // import '@/utils/index.js'
 
+import {mapGetters} from 'vuex'
 export default {
+   computed:{
+    ...mapGetters(['userType'])
+  },
  filters:{
    typeFilter(type){
      const typeMap = {
@@ -101,6 +105,10 @@ export default {
   methods: {
      //编辑用户
     editUser(){
+       if(this.userType != 0){
+        this.$message.warning('需要管理员权限！')
+        return
+      }
       this.$api.user.updateUser({
         userId:this.theUserId,
         userName:this.theUserName,
@@ -142,6 +150,10 @@ export default {
       },
     //删除
     deleteUser(userId){
+       if(this.userType != 0){
+        this.$message.warning('需要管理员权限！')
+        return
+      }
         this.$api.user.deleteUser({userId})
         .then((data)=>{
             if(data.code===1){
