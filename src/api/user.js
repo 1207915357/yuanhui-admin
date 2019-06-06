@@ -30,19 +30,19 @@ import qs from 'qs'; // 根据需求是否导入qs模块
 
 const user = {
   login(params) {
-      return axios.post(`${base.dev}/login`, qs.stringify(params));
+      return axios.post(`${base}/login`, qs.stringify(params));
   },
   getUserInfo() {
-    return axios.get(`${base.dev}/getUserInfo`);
+    return axios.get(`${base}/getUserInfo`);
   },
   getAllUser(params) {
-    return axios.post(`${base.dev}/getAllUser`, qs.stringify(params));
+    return axios.post(`${base}/getAllUser`, qs.stringify(params));
   },
   deleteUser(params) {
-    return axios.post(`${base.dev}/deleteUser`, qs.stringify(params));
+    return axios.post(`${base}/deleteUser`, qs.stringify(params));
   },
   updateUser(params) {
-    return axios.post(`${base.dev}/updateUser`, qs.stringify(params));
+    return axios.post(`${base}/updateUser`, qs.stringify(params));
   },
 }
 
